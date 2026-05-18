@@ -13,7 +13,7 @@ Automatically monitors **25+ top tech company** career pages and sends real-time
 | Developer Tools | Stripe, Vercel, Figma, Notion, Linear, Supabase, Dropbox |
 | Others | Airbnb, Spotify, Twilio, Coinbase |
 
-> **Want more?** Add any Greenhouse/Lever/Ashby company in `scripts/scraper.py` in under 2 lines — see the "Adding Companies" section below.
+> **Want more?** Add any Greenhouse/Lever/Ashby company in `scripts/scraper.py` in under 2 lines , see the "Adding Companies" section below.
 
 ---
 
@@ -85,7 +85,7 @@ The bot runs **every 2 hours** by default. To change it, edit the cron in `.gith
 - cron: "*/30 * * * *"  # every 30 minutes
 ```
 
-> GitHub Actions free tier: 2,000 minutes/month. Every 2 hours = ~360 runs/month ≈ ~6 minutes total. You're safe.
+> GitHub Actions free tier: 2,000 minutes/month. Every 2 hours = ~360 runs/month ≈ ~6 minutes total. 
 
 ---
 
@@ -138,10 +138,10 @@ python scripts/scraper.py
 ##  FAQ
 
 **Why is `seen_jobs.json` in a GitHub Actions cache and not committed?**
-Because GitHub Actions cache is ephemeral-but-persistent: it survives between runs but doesn't pollute your git history with JSON changes every 2 hours.
+Because GitHub Actions cache is ephemeral but persistent: it survives between runs but doesn't pollute your git history with JSON changes every 2 hours.
 
 **It's not sending alerts after the first run.**
-That's correct — it only alerts on *new* jobs. On the very first run it will populate the seen list. New alerts will fire as companies post new roles.
+That's correct , it only alerts on *new* jobs. On the very first run it will populate the seen list. New alerts will fire as companies post new roles.
 
 **A company's API changed and it's failing silently.**
 Each company fetch is wrapped in a try/catch and logs a warning. Check the Actions run logs for `fetch failed` messages. Open an issue or update the URL.
