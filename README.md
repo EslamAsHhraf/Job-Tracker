@@ -1,6 +1,6 @@
 #  Job Tracker Bot
 
-Automatically monitors **25+ top tech company** career pages and sends real-time alerts via **Email**. Runs free on GitHub Actions every 2 hours.
+Automatically monitors **25+ top tech company** career pages and sends real-time alerts via **Telegram, Discord, WhatsApp, and Email**. Runs free on GitHub Actions every 2 hours.
 
 ---
 
