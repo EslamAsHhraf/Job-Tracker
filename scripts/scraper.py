@@ -388,7 +388,8 @@ def matches_filter(job):
     text_with_boundaries = f" {text} "
     
     # If custom keywords provided, use them (for backward compatibility)
-    if KEYWORDS:
+    # Only use custom keywords if they're actually defined and not empty
+    if KEYWORDS and len(KEYWORDS) > 0:
         for exclude_kw in EXCLUDE_KEYWORDS:
             if exclude_kw.strip() in text:
                 return False

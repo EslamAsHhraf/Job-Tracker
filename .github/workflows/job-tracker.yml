@@ -60,8 +60,8 @@ jobs:
           EMAIL_TO:   ${{ secrets.EMAIL_TO }}
 
           # ── Optional keyword filter ───────────────────
-          # Leave empty to get ALL jobs.
-          # Examples: "engineer,backend,python" or "ml,research"
+          # Leave EMPTY for INTERNSHIPS ONLY (default).
+          # Set to custom keywords for backward compatibility: "engineer,backend,python"
           JOB_KEYWORDS: ${{ secrets.JOB_KEYWORDS }}
 
         run: python scripts/scraper.py
