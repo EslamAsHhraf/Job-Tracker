@@ -180,6 +180,7 @@ def parse_greenhouse(data, company_name):
             "location": job.get("location", {}).get("name", ""),
             "url": job.get("absolute_url", ""),
             "company": company_name,
+            "content": job.get("content", ""),  # Include job description for better filtering
         })
     return jobs
 
@@ -376,40 +377,48 @@ KEYWORDS = [k.strip() for k in KEYWORDS if k.strip()]
 # Software/Engineering keywords required
 SOFTWARE_KEYWORDS = ["software engineer", "swe", "developer", "backend", "frontend", "fullstack", "full stack", "engineer"]
 
-# Internship-specific keywords (REQUIRED) - Using word boundaries to avoid "internal"
-INTERNSHIP_KEYWORDS = [" internship", "internship ", " intern", "intern ", "summer", "coop", "co-op", "graduate program", "(intern)", "[intern]"]
+# Internship-specific keywords (REQUIRED) - Using word boundaries to avoid "internal", "internals", "international"
+INTERNSHIP_KEYWORDS = [" internship ", " internship,", "internship ", " intern ", "intern,", "intern ", "(intern)", "[intern]", "-intern)", "summer", "coop", "co-op", "graduate program"]
+
+# Strong internship indicators in description (only for titles that don't have explicit internship keyword)
+STRONG_INTERNSHIP_INDICATORS = ["Over the course of your internship", "as an intern", "internship program", "internship class", "intern role", "our internship"]
 
 # Exclude senior/staff/non-SWE positions (word boundaries for precise matching)
-EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business "]
+EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business ", "internals", "internal ", " new grad"]
 
 def matches_filter(job):
-    text = (job["title"] + " " + job.get("location", "")).lower()
-    # Add spaces around text for word boundary matching
+    title = job.get("title", "").lower()
+    location = job.get("location", "").lower()
+    description = job.get("content", "").lower() or ""  # Some APIs include job description
+    
+    # Combine title and location for main matching
+    text = f"{title} {location}".lower()
     text_with_boundaries = f" {text} "
     
-    # If custom keywords provided, use them (for backward compatibility)
-    # Only use custom keywords if they're actually defined and not empty
-    if KEYWORDS and len(KEYWORDS) > 0:
-        for exclude_kw in EXCLUDE_KEYWORDS:
-            if exclude_kw.strip() in text:
-                return False
-        return any(kw in text for kw in KEYWORDS)
-    
-    # Default: INTERNSHIPS ONLY
-    # Must have an internship keyword
-    has_internship_kw = any(kw in text_with_boundaries for kw in INTERNSHIP_KEYWORDS)
-    if not has_internship_kw:
-        return False
-    
-    # Check for excluded keywords (with word boundaries)
+    # Check for excluded keywords FIRST (title + location only)
     for exclude_kw in EXCLUDE_KEYWORDS:
         if exclude_kw in text_with_boundaries:
             return False
     
-    # Must have a software keyword
-    has_software_kw = any(kw in text for kw in SOFTWARE_KEYWORDS)
+    # If custom keywords provided, use them (for backward compatibility)
+    # Only use custom keywords if they're actually defined and not empty
+    if KEYWORDS and len(KEYWORDS) > 0:
+        return any(kw in text for kw in KEYWORDS)
     
-    return has_software_kw
+    # Default: INTERNSHIPS ONLY
+    # Must have a software keyword in TITLE (not description)
+    has_software_kw = any(kw in text for kw in SOFTWARE_KEYWORDS)
+    if not has_software_kw:
+        return False
+    
+    # Must have an internship keyword (check title first)
+    has_internship_kw = any(kw in text_with_boundaries for kw in INTERNSHIP_KEYWORDS)
+    
+    # If not in title, check description ONLY for strong internship indicators
+    if not has_internship_kw and description and "software engineer" in text:
+        has_internship_kw = any(indicator in description for indicator in STRONG_INTERNSHIP_INDICATORS)
+    
+    return has_internship_kw
 
 
 # ─────────────────────────────────────────────
