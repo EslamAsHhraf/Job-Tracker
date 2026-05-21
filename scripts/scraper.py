@@ -376,31 +376,33 @@ KEYWORDS = [k.strip() for k in KEYWORDS if k.strip()]
 # Software/Engineering keywords required
 SOFTWARE_KEYWORDS = ["software engineer", "swe", "developer", "backend", "frontend", "fullstack", "full stack", "engineer"]
 
-# Internship-specific keywords (REQUIRED)
-INTERNSHIP_KEYWORDS = ["internship", "intern", "summer", "coop", "co-op", "graduate program"]
+# Internship-specific keywords (REQUIRED) - Using word boundaries to avoid "internal"
+INTERNSHIP_KEYWORDS = [" internship", "internship ", " intern", "intern ", "summer", "coop", "co-op", "graduate program", "(intern)", "[intern]"]
 
-# Exclude senior/staff/non-SWE positions
-EXCLUDE_KEYWORDS = ["senior", "staff", "lead", "principal", "director", "manager", "architect", "devops", "data scientist", "machine learning", "ml engineer", "design", "ux", "ui", "product", "marketing", "sales", "hr", "finance", "accounting", "operations", "qa", "test", "business"]
+# Exclude senior/staff/non-SWE positions (word boundaries for precise matching)
+EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business "]
 
 def matches_filter(job):
     text = (job["title"] + " " + job.get("location", "")).lower()
+    # Add spaces around text for word boundary matching
+    text_with_boundaries = f" {text} "
     
     # If custom keywords provided, use them (for backward compatibility)
     if KEYWORDS:
         for exclude_kw in EXCLUDE_KEYWORDS:
-            if exclude_kw in text:
+            if exclude_kw.strip() in text:
                 return False
         return any(kw in text for kw in KEYWORDS)
     
     # Default: INTERNSHIPS ONLY
     # Must have an internship keyword
-    has_internship_kw = any(kw in text for kw in INTERNSHIP_KEYWORDS)
+    has_internship_kw = any(kw in text_with_boundaries for kw in INTERNSHIP_KEYWORDS)
     if not has_internship_kw:
         return False
     
-    # Check for excluded keywords
+    # Check for excluded keywords (with word boundaries)
     for exclude_kw in EXCLUDE_KEYWORDS:
-        if exclude_kw in text:
+        if exclude_kw in text_with_boundaries:
             return False
     
     # Must have a software keyword
