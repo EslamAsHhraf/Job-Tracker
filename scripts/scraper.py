@@ -377,14 +377,9 @@ KEYWORDS = [k.strip() for k in KEYWORDS if k.strip()]
 # Software/Engineering keywords required
 SOFTWARE_KEYWORDS = ["software engineer", "swe", "developer", "backend", "frontend", "fullstack", "full stack", "engineer"]
 
-# Internship-specific keywords (REQUIRED) - Using word boundaries to avoid "internal", "internals", "international"
-INTERNSHIP_KEYWORDS = [" internship ", " internship,", "internship ", " intern ", "intern,", "intern ", "(intern)", "[intern]", "-intern)", "summer", "coop", "co-op", "graduate program"]
-
-# Strong internship indicators in description (only for titles that don't have explicit internship keyword)
-STRONG_INTERNSHIP_INDICATORS = ["Over the course of your internship", "as an intern", "internship program", "internship class", "intern role", "our internship"]
 
 # Exclude senior/staff/non-SWE positions (word boundaries for precise matching)
-EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business ", "internals", "internal ", " new grad"]
+EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business ", "internals", "internal "]
 
 def matches_filter(job):
     title = job.get("title", "").lower()
@@ -408,17 +403,8 @@ def matches_filter(job):
     # Default: INTERNSHIPS ONLY
     # Must have a software keyword in TITLE (not description)
     has_software_kw = any(kw in text for kw in SOFTWARE_KEYWORDS)
-    if not has_software_kw:
-        return False
+    return has_software_kw
     
-    # Must have an internship keyword (check title first)
-    has_internship_kw = any(kw in text_with_boundaries for kw in INTERNSHIP_KEYWORDS)
-    
-    # If not in title, check description ONLY for strong internship indicators
-    if not has_internship_kw and description and "software engineer" in text:
-        has_internship_kw = any(indicator in description for indicator in STRONG_INTERNSHIP_INDICATORS)
-    
-    return has_internship_kw
 
 
 # ─────────────────────────────────────────────
@@ -508,7 +494,7 @@ def send_email(jobs):
     from email.mime.text import MIMEText
 
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_port = int(os.getenv("SMTP_PORT", 587))
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
     email_to   = os.getenv("EMAIL_TO")
