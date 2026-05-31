@@ -2,8 +2,8 @@ name: Job Tracker Bot
 
 on:
   schedule:
-    # Runs every 2 hours — adjust as you like
-    - cron: "0 */2 * * *"
+    # Runs every 12 hours — adjust as you like
+    - cron: "0 */12 * * *"
   workflow_dispatch:  # allows manual trigger from GitHub UI
 
 jobs:

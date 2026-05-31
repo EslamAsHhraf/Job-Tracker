@@ -376,10 +376,43 @@ KEYWORDS = [k.strip() for k in KEYWORDS if k.strip()]
 
 # Software/Engineering keywords required
 SOFTWARE_KEYWORDS = ["software engineer", "swe", "developer", "backend", "frontend", "fullstack", "full stack", "engineer"]
-
+ 
 
 # Exclude senior/staff/non-SWE positions (word boundaries for precise matching)
-EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business ", "internals", "internal ", "Sr. "]
+EXCLUDE_PATTERNS = [
+    r"\bsenior\b",
+    r"\bstaff\b",
+    r"\blead\b",
+    r"\bprincipal\b",
+    r"\bdirector\b",
+    r"\bmanager\b",
+    r"\barchitect\b",
+    r"\bdevops\b",
+    r"\bdata scientist\b",
+    r"\bmachine learning\b",
+    r"\bml engineer\b",
+    r"\bdesign\b",
+    r"\bux\b",
+    r"\bui\b",
+    r"\bproduct\b",
+    r"\bmarketing\b",
+    r"\bsales\b",
+    r"\bhr\b",
+    r"\bfinance\b",
+    r"\baccounting\b",
+    r"\boperations\b",
+    r"\bqa\b",
+    r"\btest\b",
+    r"\bbusiness\b",
+    r"\binternals\b",
+    r"\binternal\b",
+    r"\bsr\.?\b",
+    r"\bhead\b",
+    r"\bdirector\b",
+    r"\bai\b",
+    r"\bdata\b",
+    r"\bdigital\b",
+]
 
 def matches_filter(job):
     title = job.get("title", "").lower()
@@ -391,8 +424,8 @@ def matches_filter(job):
     text_with_boundaries = f" {text} "
     
     # Check for excluded keywords FIRST (title + location only)
-    for exclude_kw in EXCLUDE_KEYWORDS:
-        if exclude_kw in text_with_boundaries:
+    for pattern in EXCLUDE_PATTERNS:
+        if re.search(pattern, text, re.IGNORECASE):
             return False
     
     # If custom keywords provided, use them (for backward compatibility)
