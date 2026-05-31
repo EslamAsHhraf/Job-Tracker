@@ -379,7 +379,7 @@ SOFTWARE_KEYWORDS = ["software engineer", "swe", "developer", "backend", "fronte
 
 
 # Exclude senior/staff/non-SWE positions (word boundaries for precise matching)
-EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business ", "internals", "internal "]
+EXCLUDE_KEYWORDS = [" senior ", " staff ", " lead ", " principal ", " director ", " manager ", " architect ", "devops", "data scientist", "machine learning", "ml engineer", " design ", " ux ", " ui ", " product ", " marketing ", " sales ", " hr ", " finance ", "accounting", " operations ", "qa", "test ", " business ", "internals", "internal ", "Sr. "]
 
 def matches_filter(job):
     title = job.get("title", "").lower()
@@ -494,7 +494,7 @@ def send_email(jobs):
     from email.mime.text import MIMEText
 
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
+    smtp_port = int(os.getenv("SMTP_PORT") or 587)
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
     email_to   = os.getenv("EMAIL_TO")
